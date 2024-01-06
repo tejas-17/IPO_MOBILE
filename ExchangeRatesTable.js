@@ -26,23 +26,20 @@ const ExchangeRatesTable = ({ rates }) => {
 const styles = StyleSheet.create({
   tableContainer: {
     flexDirection: 'column',
-    width: width * 0.9,
-    maxHeight: 60,
-    marginVertical: 10,
   },
   tableRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
-    paddingVertical: 5,
+    padding: 5,
   },
   headerCell: {
     fontWeight: 'bold',
-    fontSize: 12,
+    fontSize: 14,
   },
   cell: {
-    fontSize: 12,
+    fontSize: 14,
   },
 });
 

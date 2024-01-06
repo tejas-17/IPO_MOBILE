@@ -9,6 +9,8 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Modal,
+  TouchableOpacity,
 } from 'react-native';
 import IPOCard from './IPOCard';
 import ExchangeRatesTable from './ExchangeRatesTable';
@@ -27,6 +29,7 @@ const App = () => {
   const [loginPassword, setLoginPassword] = useState('');
   const [showLogin, setShowLogin] = useState(true);
   const [showRegister, setShowRegister] = useState(true);
+  const [showRatesModal, setShowRatesModal] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -45,6 +48,13 @@ const App = () => {
     fetchUserData();
     fetchIPOData();
     fetchForexRates();
+
+    const refreshInterval = setInterval(() => {
+      fetchIPOData();
+      fetchForexRates();
+    }, 60000);
+
+    return () => clearInterval(refreshInterval);
   }, []);
 
   const handleLogin = async (username, password) => {
@@ -111,9 +121,24 @@ const App = () => {
     setSelectedIPO(ipo);
   };
 
+  const handleRefresh = () => {
+    fetchIPOData();
+    fetchForexRates();
+  };
+
+  const handleClickRates = () => {
+    setShowRatesModal(true);
+  };
+
+  const handleCloseRates = () => {
+    setShowRatesModal(false);
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>IPO DASHBOARD</Text>
+      <View style={styles.headerContainer}>
+        <Text style={styles.heading}>IPO DASHBOARD</Text>
+      </View>
       {user && (
         <View style={styles.dashboardHeader}>
           <Text style={styles.dashboardText}>
@@ -130,32 +155,50 @@ const App = () => {
           <View style={styles.dashboard}>
             <View style={styles.column}></View>
             <View style={styles.ipoList}>
-              <Text style={styles.heading}>Upcoming IPOs</Text>
+              <Text style={styles.subHeading}>Upcoming IPOs</Text>
               <View style={styles.ipoCardsContainer}>
-                {ipoData.map((ipo) => (
-                  <IPOCard key={ipo.symbol} ipo={ipo} onCardClick={handleCardClick} />
+                {ipoData.map((ipo, index) => (
+                  <IPOCard key={index} ipo={ipo} onCardClick={handleCardClick} />
                 ))}
               </View>
+              <Button title="Refresh Data" onPress={handleRefresh} />
             </View>
             <View style={styles.forexRates}>
-              <ExchangeRatesTable rates={forexRates} />
+              
+              <Button title="View Forex Rates" onPress={handleClickRates} />
             </View>
           </View>
         ) : (
           <View style={styles.landingPageContainer}>
             {showLogin && (
               <View style={styles.loginContainer}>
-                <Text style={styles.heading}>Login</Text>
+                <Text style={styles.subHeading}>Login</Text>
                 <Login onLogin={handleLogin} />
               </View>
             )}
             <View style={styles.registrationContainer}>
-              <Text style={styles.heading}>Register</Text>
+              <Text style={styles.subHeading}>Register</Text>
               {showRegister && <Registration onRegistration={handleRegistration} />}
             </View>
           </View>
         )}
       </KeyboardAvoidingView>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showRatesModal}
+        onRequestClose={handleCloseRates}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <ExchangeRatesTable rates={forexRates} />
+            <TouchableOpacity style={styles.closeButton} onPress={handleCloseRates}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -163,32 +206,32 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 20,
-    justifyContent: 'center',
+    padding: 10,
+  },
+  headerContainer: {
+    marginVertical: 10,
     alignItems: 'center',
   },
   heading: {
-    textAlign: 'center',
-    fontSize: 20,
-    marginTop: 20,
-    marginBottom: 10,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
   },
   dashboardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-    backgroundColor: 'green',
+    marginBottom: 10,
+    backgroundColor: 'maroon',
     color: 'white',
     padding: 10,
-    width: width * 0.9,
+    borderRadius: 8,
   },
   dashboardText: {
     fontSize: 18,
   },
   main: {
     flex: 1,
-    width: width * 0.9,
   },
   dashboard: {
     flex: 1,
@@ -197,8 +240,7 @@ const styles = StyleSheet.create({
   column: {},
   ipoList: {
     flex: 2,
-    marginLeft: width > height ? width * 0.05 : 0,
-    width: width * 0.9,
+    marginLeft: width > height ? width * 0.1 : 0,
   },
   ipoCardsContainer: {
     flexDirection: 'row',
@@ -206,12 +248,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   forexRates: {
-    flex: 1,
-    marginLeft: width > height ? width * 0.05 : 0,
-    marginTop: 20,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 10,
+    height:35,
+    marginLeft: width > height ? width * 0.1 : 0,
+    marginTop: 0,
+    backgroundColor: '#ffc',
+    borderRadius: 3,
+ 
     borderColor: '#ddd',
     borderWidth: 1,
   },
@@ -219,18 +261,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f8f9fa',
-    width: width * 0.9,
   },
   loginContainer: {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 12,
+    padding: 10,
+    borderRadius: 5,
     boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
-    margin: 20,
-    width: width * 0.9,
+    margin: 10,
   },
   registrationContainer: {
     flexDirection: 'column',
@@ -241,7 +281,36 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
     margin: 20,
+  },
+  subHeading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 10,
     width: width * 0.9,
+    height: height * 0.8,
+  },
+  closeButton: {
+    backgroundColor: 'maroon',
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 10,
+    alignSelf: 'center',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

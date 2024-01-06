@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   ipoCard: {
     borderWidth: 1,
     borderColor: '#ddd',
-    padding: 10,
+    padding: 8,
     marginBottom: 10,
     borderRadius: 8,
     backgroundColor: '#fff',
@@ -55,12 +55,14 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   companyName: {
-    fontSize: 16,
+    fontSize: 11,
     fontWeight: 'bold',
   },
   symbol: {
-    fontSize: 14,
+    fontSize: 11,
     color: '#555',
+    fontWeight: 'bold'
+    
   },
 });
 
