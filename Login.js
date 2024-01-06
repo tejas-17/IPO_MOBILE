@@ -1,12 +1,17 @@
 // Login.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
+    if (username.trim() === '' || password.trim() === '') {
+      Alert.alert('Validation Error', 'Please enter both username and password.');
+      return;
+    }
+    
     onLogin(username, password);
   };
 

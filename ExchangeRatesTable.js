@@ -1,73 +1,48 @@
 // ExchangeRatesTable.js
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
 
 const ExchangeRatesTable = ({ rates }) => {
   return (
-    <View style={styles.tableContainer}>
-      <Text style={styles.heading}>Foreign Exchange Rates</Text>
-      <View style={styles.table}>
-        <View style={[styles.row, styles.headerRow]}>
-          <Text style={styles.headerCell}>Currency Pair</Text>
-          <Text style={styles.headerCell}>Exchange Rate</Text>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <View style={styles.tableContainer}>
+        <View style={styles.tableRow}>
+          <Text style={styles.headerCell}>Currency</Text>
+          <Text style={styles.headerCell}>Rate</Text>
         </View>
-        {rates.map(({ symbol, rate }) => (
-          <View key={symbol} style={styles.row}>
-            <Text style={styles.cell}>{getCurrencyPairLabel(symbol)}</Text>
-            <Text style={styles.cell}>{rate}</Text>
+        {rates.map((rate) => (
+          <View style={styles.tableRow} key={rate.symbol}>
+            <Text style={styles.cell}>{rate.symbol}</Text>
+            <Text style={styles.cell}>{rate.rate}</Text>
           </View>
         ))}
       </View>
-    </View>
+    </ScrollView>
   );
-};
-
-const getCurrencyPairLabel = (symbol) => {
-  const currencyPairs = {
-    USDCAD: 'US Dollar to Canadian Dollar',
-    GBPUSD: 'British Pound to US Dollar',
-    USDJPY: 'US Dollar to Japanese Yen',
-    // Add more currency pairs as needed
-  };
-
-  return currencyPairs[symbol] || symbol;
 };
 
 const styles = StyleSheet.create({
   tableContainer: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    overflow: 'hidden',
+    flexDirection: 'column',
+    width: width * 0.9,
+    maxHeight: 60,
     marginVertical: 10,
   },
-  table: {
-    backgroundColor: '#fff',
-  },
-  heading: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    paddingVertical: 10,
-    backgroundColor: 'green',
-    color: 'white',
-  },
-  row: {
+  tableRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
-  headerRow: {
-    backgroundColor: '#f2f2f2',
+    paddingVertical: 5,
   },
   headerCell: {
     fontWeight: 'bold',
+    fontSize: 12,
   },
   cell: {
-    flex: 1,
+    fontSize: 12,
   },
 });
 
