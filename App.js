@@ -229,6 +229,7 @@ const styles = StyleSheet.create({
   },
   dashboardText: {
     fontSize: 18,
+    color:"white"
   },
   main: {
     flex: 1,
